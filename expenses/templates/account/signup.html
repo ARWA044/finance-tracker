@@ -1,0 +1,27 @@
+{% extends "expenses/base.html" %}
+{% load widget_tweaks %}
+{% load i18n %}
+
+
+{%block head_title%}{% trans 'Sign Up'%}{% endblock %}
+
+{%block content %}
+<form method='POST' action="{%url 'account_signup'%}" >
+    {% csrf_token%}
+    <div class="mb-2 form-control"> 
+        {{form.username|add_label_class:"text-white mb-2"}}
+        {% render_field form.username class="input text-black" %}
+    </div>
+    <div class="mb-2 form-control">
+        {{form.password1|add_label_class:"text-white mb-2"}}
+        {% render_field form.password1 class="input text-black"  %}
+    </div>
+    <div class="mb-2 form-control">
+        {{form.password2|add_label_class:"text-white mb-2"}}
+        {% render_field form.password2 class="input text-black" %}
+    </div>
+    <button type='submit' class='btn'>{% trans 'Sign Up'%}</button>
+</form>
+{% endblock content %}
+
+

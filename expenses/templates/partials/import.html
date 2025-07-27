@@ -1,0 +1,18 @@
+{% load widget_tweaks %}
+{% load i18n %}
+
+
+{%block head_title%}{% trans 'Import Transaction '%}{% endblock %}
+
+{%block content %}
+    <form hx-post={%url 'import'%}
+         hx-encoding='multipart/form-data'
+         hx-target="#transaction-block"
+        >
+            <div class='mb-4 mt-4'>
+                <input type='file' name='file' class="file-input  text-black" />
+                
+            </div>
+            <button type='submit' class='btn'  >{% trans 'upload'%}</button>
+    </form>
+{%endblock content %}

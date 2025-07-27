@@ -1,0 +1,21 @@
+
+{% load widget_tweaks %}
+{% load i18n %}
+
+
+{%block head_title%}{% trans 'Add Transaction '%}{% endblock %}
+
+{%block content %}
+    <form hx-post={%url 'Add_Transactions'%}
+        >
+        {% csrf_token%}
+            {% include 'partials/transaction_form.html' %}
+            <button type='submit' class='btn'  >{% trans 'Add'%}</button>
+            <button class="btn btn" 
+                hx-get="{% url 'Transactions' %}" 
+                hx-target="#transaction-block"
+                hx-push-url='/transactions'>
+            Cancel
+            </button>
+    </form>
+{%endblock content %}

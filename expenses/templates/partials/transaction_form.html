@@ -1,0 +1,17 @@
+{% load widget_tweaks %}     
+        <div class="mb-2 form-control">
+            {{form.type|add_label_class:"text-white mb-2"}}
+            {% render_field form.type class="input text-black" %}
+        </div>
+        <div class="mb-2 form-control">
+            {{form.category|add_label_class:"text-white mb-2"}}
+            {% render_field form.category %}
+        </div>
+        <div class="mb-2 form-control">
+            {{form.amount|add_label_class:"text-white mb-2"}}
+            {% render_field form.amount class="input text-black" %}
+        </div>
+        <div class="mb-2 form-control">
+            {{form.time|add_label_class:"text-white mb-2"}}
+            {% render_field form.time  class="input text-black"%}
+        </div>

@@ -1,0 +1,64 @@
+{% load widget_tweaks %}
+
+<div id="charts_container" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="col-span-1 ">
+            <div class="card bg-base-100 shadow-md p-4">
+            <h2 class="text-lg font-semibold mb-4 text-center text-black">Filter Charts</h2>
+            <form 
+                hx-get="{% url 'Charts' %}"
+                hx-target="#charts_container"
+                hx-swap="outerHTML"
+                class="space-y-4"
+            >
+                <div class="form-control">
+                    {{ filter.form.transaction_type|add_label_class:"text-black mb-1" }}
+                    {% render_field filter.form.transaction_type class="input input-bordered w-full text-black" %}
+                </div>
+                <div class="form-control">
+                    {{ filter.form.start_date|add_label_class:"text-black mb-1" }}
+                    {% render_field filter.form.start_date class="input input-bordered w-full text-black" %}
+                </div>
+                <div class="form-control">
+                    {{ filter.form.end_date|add_label_class:"text-black mb-1" }}
+                    {% render_field filter.form.end_date class="input input-bordered w-full text-black" %}
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    {% for checkbox in filter.form.category_type %}
+                    <label
+                        class="cursor-pointer rounded-full border px-3 py-1 select-none
+                            hover:bg-blue-500 hover:text-white
+                            {% if checkbox.data.checked %} bg-blue-600 text-white border-blue-600 {% else %} bg-white text-gray-700 {% endif %}"
+                    >
+                        {{ checkbox.tag }}
+                        <span>{{ checkbox.choice_label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-primary w-full">Apply Filters</button>
+            </form>
+            </div>
+        </div>
+
+    <!-- Charts Section -->
+    <div class="col-span-1 md:col-span-3 space-y-6">
+        
+        <!-- Bar Chart -->
+        <div class="card bg-base-100 shadow-md p-4">
+            <h2 class="text-lg font-semibold mb-2 text-center text-black">Income vs Expense</h2>
+            <div>{{ income_expense_barcharts|safe }}</div>
+        </div>
+
+        <!-- Pie Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="card bg-base-100 shadow-md p-4">
+                <h2 class="text-lg font-semibold mb-2 text-center text-black">Income by Category</h2>
+                <div>{{ income_category_piecharts|safe }}</div>
+            </div>
+            <div class="card bg-base-100 shadow-md p-4">
+                <h2 class="text-lg font-semibold mb-2 text-center text-black">Expenses by Category</h2>
+                <div>{{ expense_category_piecharts|safe }}</div>
+            </div>
+        </div>
+
+    </div>  
+</div>
