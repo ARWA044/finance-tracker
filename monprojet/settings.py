@@ -15,9 +15,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-s@jb6-g+chv3!(qzl-6&tz2$wg+z0fjr2un*zdow4wko1br2%h')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '192.168.1.164,127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,yourusername.pythonanywhere.com').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -97,7 +97,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'monprojet.wsgi.application'
 
-# Database
+# Database - Use SQLite for PythonAnywhere
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -105,14 +105,10 @@ DATABASES = {
     }
 }
 
-# Use PostgreSQL in production if DATABASE_URL is set
-if os.environ.get('DATABASE_URL'):
-    try:
-        import dj_database_url
-        DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
-    except ImportError:
-        # If dj-database-url is not installed, continue with SQLite
-        pass
+# Comment out PostgreSQL configuration for PythonAnywhere
+# if os.environ.get('DATABASE_URL'):
+#     import dj_database_url
+#     DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -143,8 +139,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# Static files storage
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Static files storage - Use default for PythonAnywhere
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
