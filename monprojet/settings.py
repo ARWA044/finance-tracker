@@ -97,7 +97,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'monprojet.wsgi.application'
 
-# Database - Use SQLite for PythonAnywhere
+# Database - Use SQLite only (no PostgreSQL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -105,10 +105,13 @@ DATABASES = {
     }
 }
 
-# Comment out PostgreSQL configuration for PythonAnywhere
+# Comment out PostgreSQL completely
 # if os.environ.get('DATABASE_URL'):
 #     import dj_database_url
 #     DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
+
+# Remove whitenoise for Fly.io
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
