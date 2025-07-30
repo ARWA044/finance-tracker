@@ -17,7 +17,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '75fd0p)n&p3$*9tji(a81n6q6hu3-h$+l_o^3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,yourusername.pythonanywhere.com').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,arwa91.pythonanywhere.com').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'import_export',
     'template_partials',
-    
+
     'expenses',
 ]
 
@@ -51,7 +51,26 @@ if DEBUG:
 
 SITE_ID = 1
 
+# Allauth Configuration
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Email backend (for development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Allauth settings
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+
 LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+SIGNUP_REDIRECT_URL = 'home'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -149,30 +168,37 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-# Logging configuration
+
+
+# Logging configuration - PythonAnywhere friendly
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+        'simple': {
+            'format': '{levelname} {message}',
             'style': '{',
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'simple',
         },
     },
     'root': {
         'handlers': ['console'],
-        'level': 'INFO',
+        'level': 'WARNING',
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'allauth': {
+            'handlers': ['console'],
+            'level': 'WARNING',
             'propagate': False,
         },
     },
