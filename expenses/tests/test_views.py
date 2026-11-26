@@ -16,7 +16,7 @@ def test_total_values_views(user_transactions,client):
     response=client.get(reverse('Transactions'))
     
     assert response.context['Totale_Income']==total_income
-    assert response.context['Totale_Expense']==total_income
+    assert response.context['Totale_Expense']==total_expense
     assert response.context['Net_income']==net
     
 @pytest.mark.django_db
@@ -111,3 +111,12 @@ def test_delete_transaction(user,transaction_params,client):
     
     
     
+
+@pytest.mark.django_db
+def test_other_user_cannot_update_or_delete(client, user):
+    from expenses.factories import TransactionFactory
+    other = TransactionFactory()
+    client.force_login(user)
+    assert client.get(reverse('update_transaction', kwargs={'pk': other.pk})).status_code == 404
+    assert client.delete(reverse('delete_transaction', kwargs={'pk': other.pk})).status_code == 404
+    assert Transaction.objects.filter(pk=other.pk).exists()

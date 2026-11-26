@@ -7,7 +7,9 @@ from expenses.models import Transaction,Category
 from .charts import Total_income_expense_bar_charts,category_pie_chart
 from django.http import HttpResponse
 from expenses.resources import TransactionResource
-import tablib
+import csv
+import io
+from django.db import transaction as db_transaction
 from django.urls import reverse
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -135,23 +137,36 @@ def export(request):
                 
 @login_required
 def import_transaction(request):
-    if request.method=='POST':
-        file = request.FILES['file']  
-        raw_data = file.read().decode('utf-8-sig')
-        csv_data = raw_data.replace(';', ',')  # Fix separator
-
-        dataset = tablib.Dataset().load(csv_data, format='csv')
-        result = TransactionResource().import_data(dataset, user=request.user, dry_run= True )
-        for row in result:
-             for error in row.errors:
-                print(error.error)
-        
-        if not result.has_errors():
-            TransactionResource().import_data(dataset, user=request.user, dry_run=False)
-            context = {'message': f'{len(dataset)} transactions were uploaded successfully'}
-        else:
-            context = {'message': 'Sorry, an error occurred.'}
-        return render(request, 'partials/success_transaction.html', context)
-    
-    return render( request, 'partials/import.html')
-        
+    if request.method != 'POST':
+        return render(request, 'partials/import.html')
+    upload = request.FILES.get('file')
+    def error():
+        return render(request, 'partials/success_transaction.html',
+                      {'message': 'Invalid CSV. No transactions were imported.'}, status=400)
+    if upload is None or upload.size > 2 * 1024 * 1024:
+        return error()
+    try:
+        raw = upload.read().decode('utf-8-sig')
+        dialect = csv.Sniffer().sniff(raw[:4096], delimiters=',;')
+        reader = csv.DictReader(io.StringIO(raw), dialect=dialect)
+        if set(reader.fieldnames or []) != {'type', 'category', 'amount', 'time'} or len(reader.fieldnames or []) != 4:
+            return error()
+        records = []
+        for row in reader:
+            if len(records) >= 5000 or None in row:
+                return error()
+            category = Category.objects.get(name=row['category'])
+            form = TransactionForm({**row, 'category': category.pk})
+            if not form.is_valid():
+                return error()
+            record = form.save(commit=False)
+            record.user = request.user
+            records.append(record)
+        if not records:
+            return error()
+    except (UnicodeError, csv.Error, Category.DoesNotExist, Category.MultipleObjectsReturned, TypeError, ValueError):
+        return error()
+    with db_transaction.atomic():
+        Transaction.objects.bulk_create(records)
+    return render(request, 'partials/success_transaction.html',
+                  {'message': f'{len(records)} transactions were uploaded successfully'})
